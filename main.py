@@ -39,22 +39,30 @@ def get_input(data):
         if not data[user_input]["added"]:
             # State guessed has already been guessed previously.
             data[user_input]["added"] = True
-            return CORRECT
+            return CORRECT, user_input
         else:
             # Handle states that have already been correctly guessed.
-            return DUPLICATE
+            return DUPLICATE, user_input
     else:
         # Handle incorrectly guessed state.
-        return INCORRECT
+        return INCORRECT, user_input
+
+
+def add_state_label(state, data):
+    labeler = turtle.Turtle()
+    labeler.penup()
+    labeler.hideturtle()
+    labeler.goto(data[state]["x"], data[state]["y"])
+    labeler.write(state, False, "center", ("Arial", 8, "normal"))
 
 
 screen = setup_game_window()
 import_state_data(state_data)
 while True:
-    result = get_input(state_data)
+    result, guessed_state = get_input(state_data)
     if result == CORRECT:
         points += 1
-        # Add label
+        add_state_label(guessed_state, state_data)
     elif result == DUPLICATE:
         # Inform and re-ask
         pass
