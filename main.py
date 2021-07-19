@@ -24,6 +24,7 @@ class GuessTheStates:
         self.prompt_text = ""
         self.user_input = ""
         self.duplicate_guess = False
+        self.dialog_title = ""
 
         self.labeler = turtle.Turtle()
         self.labeler.penup()
@@ -53,7 +54,8 @@ class GuessTheStates:
             self.prompt_text = "You've already guessed that state. Try again."
 
         # Get the user's guess.
-        self.user_input = self.window.textinput(title=f"Guess the State [{self.points}/50]", prompt=self.prompt_text).title()
+        self.dialog_title = f"Guess the State [{self.points}/50]"
+        self.user_input = self.window.textinput(title=self.dialog_title, prompt=self.prompt_text).title()
 
         self.duplicate_guess = False
         if self.user_input in self.data:
