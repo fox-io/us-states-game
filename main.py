@@ -1,18 +1,20 @@
 import csv
 import turtle
 
-db = {
-    "states": {},
-}
-screen = turtle.Screen()
+CORRECT = 0
+INCORRECT = 1
+DUPLICATE = 2
+points = 0
+state_data = {}
 
 
-def setup_game_window(window):
+def setup_game_window():
     window = turtle.Screen()
     window.title("US States Game")
     window.setup(width=725, height=491)
     window.addshape("blank_states_img.gif")
     turtle.shape("blank_states_img.gif")
+    return window
 
 
 def import_state_data(data):
@@ -21,7 +23,7 @@ def import_state_data(data):
         for entry in csv_entries:
             # Filter out the column header entry, add the rest.
             if entry[0] != "state":
-                data["states"][entry[0]] = {
+                data[entry[0]] = {
                     # x,y coordinates on game screen to print label.
                     "x": int(entry[1]),
                     "y": int(entry[2]),
@@ -30,32 +32,35 @@ def import_state_data(data):
                 }
 
 
-def ask_for_input(data):
+def get_input(data):
     user_input = screen.textinput(title="Guess the State", prompt="What is a state name?").title()
-    if user_input in data["states"]:
+    if user_input in data:
         # State guessed is present in db.
-        if not data["states"][user_input]["added"]:
+        if not data[user_input]["added"]:
             # State guessed has already been guessed previously.
-            data["states"][user_input]["added"] = True
-            print("Yes")
+            data[user_input]["added"] = True
+            return CORRECT
         else:
             # Handle states that have already been correctly guessed.
-            print("Already Guessed This State")
+            return DUPLICATE
     else:
         # Handle incorrectly guessed state.
-        print("No")
+        return INCORRECT
 
 
-setup_game_window(screen)
-import_state_data(db)
+screen = setup_game_window()
+import_state_data(state_data)
 while True:
-    ask_for_input(db)
-        #check_input()
-            #if input in data:
-                #add_label()
-                #add_point()
-            #else
-                #game_over()
+    result = get_input(state_data)
+    if result == CORRECT:
+        points += 1
+        # Add label
+    elif result == DUPLICATE:
+        # Inform and re-ask
+        pass
+    elif result == INCORRECT:
+        # Game Over
+        break
 
 
 screen.exitonclick()
