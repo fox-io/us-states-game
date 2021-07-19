@@ -32,8 +32,16 @@ def import_state_data(data):
                 }
 
 
-def get_input(data):
-    user_input = screen.textinput(title="Guess the State", prompt="What is a state name?").title()
+def get_input(data, duplicate_guess):
+    # Set default prompt
+    prompt_text = "What is the name of a state?"
+    if duplicate_guess:
+        # If previous guess was a duplicate, inform user.
+        prompt_text = "You've already guessed that state. Try again."
+
+    # Get the user's guess.
+    user_input = screen.textinput(title=f"Guess the State [{points}/50]", prompt=prompt_text).title()
+
     if user_input in data:
         # State guessed is present in db.
         if not data[user_input]["added"]:
@@ -49,6 +57,14 @@ def get_input(data):
 
 
 def add_state_label(state, data):
+    """Shows text with the name of the state at the coordinates provided.
+
+    Parameters
+    __________
+    state: string
+        String containing the name of a state in Title Case
+    data: dict
+        Dict containing the states and x,y coordinates."""
     labeler = turtle.Turtle()
     labeler.penup()
     labeler.hideturtle()
@@ -56,18 +72,27 @@ def add_state_label(state, data):
     labeler.write(state, False, "center", ("Arial", 8, "normal"))
 
 
+is_duplicate = False
 screen = setup_game_window()
 import_state_data(state_data)
 while True:
-    result, guessed_state = get_input(state_data)
+    result, guessed_state = get_input(state_data, is_duplicate)
+    is_duplicate = False
     if result == CORRECT:
         points += 1
         add_state_label(guessed_state, state_data)
     elif result == DUPLICATE:
         # Inform and re-ask
+        is_duplicate = True
         pass
     elif result == INCORRECT:
         # Game Over
+        gg = turtle.Turtle()
+        gg.penup()
+        gg.color("red")
+        gg.hideturtle()
+        gg.goto(0, -40)
+        gg.write(f"Game Over!\n{points}/50 Correct", False, "center", ("Arial", 36, "bold"))
         break
 
 
